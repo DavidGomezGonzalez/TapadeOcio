@@ -41,7 +41,6 @@ class GoogleController extends Controller
                     $finduser->email_verified_at = now();
                     $finduser->save();
                 }
-
                 return redirect()->intended('dashboard');
             } else {
                 $newUser = User::updateOrCreate(['email' => $user->email], [
