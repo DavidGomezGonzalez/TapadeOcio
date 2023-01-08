@@ -1,3 +1,7 @@
+.border-andalusia {
+    border-color: #006633
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

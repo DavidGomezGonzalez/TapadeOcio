@@ -7,6 +7,7 @@ use Laravel\Socialite\Facades\Socialite;
 use Exception;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class GoogleController extends Controller
 {
@@ -52,11 +53,13 @@ class GoogleController extends Controller
 
                 Auth::login($newUser);
 
-
                 return redirect()->intended('dashboard');
             }
         } catch (Exception $e) {
             dd($e->getMessage());
+            /*Log::debug($e->getMessage());
+            Log::debug($e->getFile());
+            Log::debug($e->getLine());*/
         }
     }
 }

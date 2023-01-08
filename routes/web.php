@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GoogleController;
+use App\Http\Livewire\UsersTable;
+use App\Models\Provincia;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -25,9 +28,23 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+    Route::get('/users', UsersTable::class)->name('users');
+    Route::get('/users/{id}', function ($id) {
+        return view('users.update', ['id' => $id]);
+    })->name('user-edit');
 });
 
-Route::controller(GoogleController::class)->group(function(){
+Route::controller(GoogleController::class)->group(function () {
     Route::get('auth/google', 'redirectToGoogle')->name('auth.google');
     Route::get('auth/google/callback', 'handleGoogleCallback');
+});
+
+
+Route::get('/test', function () {
+
+    /* $provincia = Provincia::find(14);
+ 
+     foreach ($provincia->municipios as $municipio) {
+         echo $municipio->municipio."<br>";
+     }*/
 });
