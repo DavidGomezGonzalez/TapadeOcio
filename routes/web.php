@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GoogleController;
+use App\Http\Controllers\UsersController;
 use App\Http\Livewire\UsersTable;
 use App\Models\Provincia;
 
@@ -28,10 +29,14 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
-    Route::get('/users', UsersTable::class)->name('users');
-    Route::get('/users/{id}', function ($id) {
-        return view('users.update', ['id' => $id]);
-    })->name('user-edit');
+
+    Route::controller(UsersController::class)->group(function () {
+        Route::get('/users', UsersTable::class)->name('users.index');
+        Route::get('/users/{id}', 'edit')->name('users.edit');
+        Route::put('/users/{id}', 'update')->name('users.update');
+    });
+
+
 });
 
 Route::controller(GoogleController::class)->group(function () {

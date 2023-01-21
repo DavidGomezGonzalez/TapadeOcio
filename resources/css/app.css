@@ -1,5 +1,17 @@
 .border-andalusia {
-    border-color: #006633
+    border-color: #006633;
+}
+
+.color-andalusia{
+    color: #006633;
+}
+
+.bg-andalusia {
+    background-color: rgb(0, 102, 51);
+}
+
+.hover\:bg-andalusia:hover {
+    background-color: rgb(0, 76, 38);
 }
 
 @tailwind base;
