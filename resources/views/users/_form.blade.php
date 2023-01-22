@@ -1,5 +1,5 @@
 <div class="block p-6 rounded-lg shadow-lg bg-white">
-    <form action="{{ route('users.update', ['id'=>$model->id]) }}" method="POST" class="w-full max-w-lg">
+    <form action="{{ route('users.update', ['id' => $model->id]) }}" method="POST" class="w-full max-w-lg">
         @csrf
         @method('PUT')
         <div class="flex flex-wrap -mx-3 mb-6">
@@ -52,9 +52,10 @@
                     <select
                         class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                         id="grid-state">
-                        <option>New Mexico</option>
-                        <option>Missouri</option>
-                        <option>Texas</option>
+                        @foreach ($municipios as $m)
+                            <option>{{ $m->municipio }}</option>
+                        @endforeach
+
                     </select>
                 </div>
             </div>

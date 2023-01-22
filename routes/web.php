@@ -34,6 +34,7 @@ Route::middleware([
         Route::get('/users', UsersTable::class)->name('users.index');
         Route::get('/users/{id}', 'edit')->name('users.edit');
         Route::put('/users/{id}', 'update')->name('users.update');
+        Route::delete('/users/{id}', 'destroy')->name('users.destroy');
     });
 
 
