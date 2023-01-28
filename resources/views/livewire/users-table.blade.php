@@ -1,3 +1,8 @@
+@php
+    use App\Models\Municipio;
+    use App\Models\Provincia;
+    
+@endphp
 <x-slot name="header">
     <h2 class="font-semibold text-xl text-gray-800 leading-tight">
         {{ __('Users') }}
@@ -7,23 +12,23 @@
     <div class="mx-auto sm:px-6 lg:px-8">
         <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
 
-
             <!-- component -->
-
-
             <div class="overflow-hidden rounded-lg border border-gray-200 shadow-md m-5">
                 <div class="border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
                     <input wire:model="search" class="form-input rounded-md shadow-sm block w-full border-gray-200"
-                        type="text" placeholder="{{ __('Search') }}...">
+                        type="text" placeholder="{{ __('Search Name') }}...">
                 </div>
                 @if ($users->count())
                     <table class="w-full border-collapse bg-white text-left text-sm text-gray-500">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th scope="col" class="px-6 py-4 font-medium text-gray-900">Name</th>
-                                <th scope="col" class="px-6 py-4 font-medium text-gray-900">State</th>
-                                <th scope="col" class="px-6 py-4 font-medium text-gray-900">Role</th>
-                                <th scope="col" class="px-6 py-4 font-medium text-gray-900"></th>
+                                <th scope="col" class="px-6 py-4 font-medium text-gray-900">{{ __('Name') }}</th>
+                                <th scope="col" class="px-6 py-4 font-medium text-gray-900">{{ __('Province') }}
+                                </th>
+                                <th scope="col" class="px-6 py-4 font-medium text-gray-900">{{ __('City') }}
+                                </th>
+                                <th scope="col" class="px-6 py-4 font-medium text-gray-900 ">{{ __('State') }}</th>
+                                <th scope="col" class="px-6 py-4 font-medium text-gray-900 text-right">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100 border-t border-gray-100">
@@ -42,19 +47,24 @@
                                         </div>
                                     </th>
                                     <td class="px-6 py-4">
+                                        {{ Provincia::getProvinciaName($user->provincia) }} 
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        {{ Municipio::getMunicipioName($user->municipio) }} 
+                                    </td>
+                                    <td class="px-6 py-4">
                                         <span
                                             class="inline-flex items-center gap-1 rounded-full bg-green-50 px-2 py-1 text-xs font-semibold text-green-600">
                                             <span class="h-1.5 w-1.5 rounded-full bg-green-600"></span>
                                             Active
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4">Product Designer</td>
                                     <td class="px-6 py-4">
                                         <div class="flex justify-end gap-4">
-                                            <a style=""
-                                                x-data="{ tooltip: 'Delete' }"
+                                            <a style="" x-data="{ tooltip: 'Delete' }"
                                                 onclick="document.getElementById('btn-delete-{{ $user->id }}').click();"
-                                                href="#" class="delete-button btn-rojo" data-user-id="{{ $user->id }}">
+                                                href="#" class="delete-button btn-rojo"
+                                                data-user-id="{{ $user->id }}">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none"
                                                     viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                                                     class="h-5 w-5" x-tooltip="tooltip">
@@ -71,8 +81,7 @@
                                                     id="btn-delete-{{ $user->id }}">DELETE</button>
                                             </form>
 
-                                            <a x-data="{ tooltip: 'Edite' }"
-                                                class="btn-andalusia"
+                                            <a x-data="{ tooltip: 'Edite' }" class="btn-andalusia"
                                                 href="{{ route('users.edit', ['id' => $user->id]) }}">
                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none"
                                                     viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"

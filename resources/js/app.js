@@ -1,4 +1,5 @@
 import './bootstrap';
+import select2 from 'select2';
 
 
 import Alpine from 'alpinejs';
@@ -11,6 +12,11 @@ window.Alpine = Alpine;
 Alpine.plugin(focus);
 
 Alpine.start();
+
+$(document).ready(function() {
+    $('.select2').select2();
+});
+
 
 
 

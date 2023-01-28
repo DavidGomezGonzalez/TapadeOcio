@@ -1,5 +1,5 @@
 <div class="block p-6 rounded-lg shadow-lg bg-white">
-    <form action="{{ route('users.update', ['id' => $model->id]) }}" method="POST" class="w-full max-w-lg">
+    <form action="{{ route('users.update', ['id' => $model->id]) }}" method="POST" class="w-full">
         @csrf
         @method('PUT')
         <div class="flex flex-wrap -mx-3 mb-6">
@@ -36,36 +36,31 @@
             </div>
         </div>
         <div class="flex flex-wrap -mx-3 mb-2">
-            <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
-                <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-city">
+            <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-state">
+                    {{ __('Province') }}
+                </label>
+                <select
+                    class="select2 block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                    id="provincia" name="provincia">
+                    <option value="">Choose a Value</option>
+                    @foreach ($provincias as $p)
+                        <option value="{{ $p->id }}">{{ $p->provincia }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-zip">
                     {{ __('City') }}
                 </label>
-                <input
-                    class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                    id="grid-city" type="text" placeholder="Albuquerque">
-            </div>
-            <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
-                <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-state">
-                    State
-                </label>
-                <div class="relative">
-                    <select
-                        class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                        id="grid-state">
-                        @foreach ($municipios as $m)
-                            <option>{{ $m->municipio }}</option>
-                        @endforeach
-
-                    </select>
-                </div>
-            </div>
-            <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
-                <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-zip">
-                    Zip
-                </label>
-                <input
-                    class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                    id="grid-zip" type="text" placeholder="90210">
+                <select
+                    class="select2 block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                    id="municipio" name="municipio">
+                    <option value="">Choose a Value</option>
+                    @foreach ($municipios as $m)
+                        <option value="{{ $m->id }}">{{ $m->municipio }}</option>
+                    @endforeach
+                </select>
             </div>
         </div>
 
@@ -76,3 +71,39 @@
         </div>
     </form>
 </div>
+
+<script type="text/javascript">
+    $('#provincia').val({{ $model->provincia }});
+    $('#provincia').select2();
+
+    $('#municipio').val({{ $model->municipio }});
+
+    var path = "{{ route('autocomplete') }}";
+    $('#municipio').select2({
+        placeholder: 'Choose a Value',
+          ajax: {
+          url: path,
+          dataType: 'json',
+          delay: 250,
+          data: function (params) {
+            return {
+                q: params.term, // search term
+                page: params.page,
+                provincia: $('#provincia').val(),
+            };
+          },
+          processResults: function (data) {
+            return {
+              results:  $.map(data, function (item) {
+                    return {
+                        text: item.municipio,
+                        id: item.id
+                    }
+                })
+            };
+          },
+          cache: true
+        }
+      });
+</script>
+

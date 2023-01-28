@@ -14,4 +14,8 @@ class Provincia extends Model
     {
         return $this->hasMany(Municipio::class);
     }
+
+    public static function getProvinciaName($id){
+        return Provincia::select('provincia')->where('id', $id)->get()->value('provincia');
+    }
 }

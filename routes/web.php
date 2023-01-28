@@ -2,9 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GoogleController;
+use App\Http\Controllers\MunicipioController;
 use App\Http\Controllers\UsersController;
 use App\Http\Livewire\UsersTable;
-use App\Models\Provincia;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,6 +35,8 @@ Route::middleware([
         Route::get('/users/{id}', 'edit')->name('users.edit');
         Route::put('/users/{id}', 'update')->name('users.update');
         Route::delete('/users/{id}', 'destroy')->name('users.destroy');
+
+        Route::get('autocomplete', [MunicipioController::class,'autocomplete'])->name('autocomplete');
     });
 
 
