@@ -13,6 +13,10 @@ class Municipio extends Model
         return Municipio::select('municipio')->where('id', $id)->get()->value('municipio');
     }
 
+    public static function getAll(){
+        return Municipio::get();
+    }
+
 }
 
 

@@ -1,7 +1,6 @@
 @php
     use App\Models\Municipio;
     use App\Models\Provincia;
-    
 @endphp
 <x-slot name="header">
     <h2 class="font-semibold text-xl text-gray-800 leading-tight">

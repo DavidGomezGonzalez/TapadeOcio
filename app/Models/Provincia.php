@@ -18,4 +18,7 @@ class Provincia extends Model
     public static function getProvinciaName($id){
         return Provincia::select('provincia')->where('id', $id)->get()->value('provincia');
     }
+    public static function getAll(){
+        return Provincia::get();
+    }
 }

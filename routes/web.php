@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\MunicipioController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\SubcategoryController;
 use App\Http\Livewire\UsersTable;
 
 /*
@@ -19,7 +21,7 @@ use App\Http\Livewire\UsersTable;
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('welcome');
 
 Route::middleware([
     'auth:sanctum',
@@ -35,12 +37,14 @@ Route::middleware([
         Route::get('/users/{id}', 'edit')->name('users.edit');
         Route::put('/users/{id}', 'update')->name('users.update');
         Route::delete('/users/{id}', 'destroy')->name('users.destroy');
-
-        Route::get('autocomplete', [MunicipioController::class,'autocomplete'])->name('autocomplete');
     });
 
-
+    Route::resource('categories', CategoryController::class);
+    Route::resource('subcategories', SubcategoryController::class);
 });
+
+//Select2
+Route::get('autocomplete', [MunicipioController::class, 'autocomplete'])->name('autocomplete');
 
 Route::controller(GoogleController::class)->group(function () {
     Route::get('auth/google', 'redirectToGoogle')->name('auth.google');
