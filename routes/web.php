@@ -6,6 +6,8 @@ use App\Http\Controllers\MunicipioController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SubcategoryController;
+use App\Http\Controllers\AnalyticsController;
+use App\Http\Controllers\DashboardCotroller;
 use App\Http\Livewire\UsersTable;
 
 /*
@@ -28,9 +30,8 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified'
 ])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    
+    Route::get('/dashboard', DashboardCotroller::class)->name('dashboard');
 
     Route::controller(UsersController::class)->group(function () {
         Route::get('/users', UsersTable::class)->name('users.index');
@@ -41,6 +42,9 @@ Route::middleware([
 
     Route::resource('categories', CategoryController::class);
     Route::resource('subcategories', SubcategoryController::class);
+
+    Route::get('sales-chart', [AnalyticsController::class, 'salesChart']);
+
 });
 
 //Select2

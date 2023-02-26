@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 use Laravel\Jetstream\Features;
+use Carbon\Carbon;
 
 class UserFactory extends Factory
 {
@@ -36,6 +37,8 @@ class UserFactory extends Factory
             'remember_token'    => Str::random(10),
             'provincia'         => $provincia,
             'municipio'         => $municipio,
+            'created_at' => Carbon::now()->subMonths(rand(0, 11)),
+            'updated_at' => Carbon::now(),
         ];
     }
 
