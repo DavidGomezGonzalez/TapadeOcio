@@ -46,30 +46,38 @@
             </header>
         @endif --}}
 
-        @if (Auth::guard()->check())
+
         <main>
             <div class="flex justify-between">
-                <div class="bg-white w-max w-64 border border-gray-200" style="height: 89.45vh">
-                    <ul class="flex flex-col">
-                        <li
-                            class="@php echo request()->routeIs('dashboard') ? 'nav_active' : ''; @endphp py-3 px-6 border ">
-                            <a href="{{ route('dashboard') }}" class="">{{ __('Dashboard') }}</a>
-                        </li>
-                        <li
-                            class="@php echo request()->routeIs('users.*') ? 'nav_active' : ''; @endphp py-3 px-6 border ">
-                            <a href="{{ route('users.index') }}" class="">{{ __('Users') }}</a></li>
-                        <li
-                            class="@php echo request()->routeIs('categories.*') ? 'nav_active' : ''; @endphp py-3 px-6 border ">
-                            <a href="{{ route('categories.index') }}" class="">Categories</a></li>
-                    </ul>
-                </div>
+                @if (Auth::guard()->check() &&
+                        auth()->user()->isAdmin())
+                    <div class="bg-white w-max w-64 border border-gray-200 h-screen" style="">
+                        <ul class="flex flex-col"> 
+                            <li
+                                class="@php echo request()->routeIs('dashboard') ? 'nav_active' : ''; @endphp py-3 px-6 border ">
+                                <a href="{{ route('dashboard') }}" class="">{{ __('Dashboard') }}</a>
+                            </li>
+                            <li
+                                class="@php echo request()->routeIs('users.*') ? 'nav_active' : ''; @endphp py-3 px-6 border ">
+                                <a href="{{ route('users.index') }}" class="">{{ __('Users') }}</a>
+                            </li>
+                            <li
+                                class="@php echo request()->routeIs('categories.*') ? 'nav_active' : ''; @endphp py-3 px-6 border ">
+                                <a href="{{ route('categories.index') }}" class="">Categories</a>
+                            </li>
+                            <li
+                                class="@php echo request()->routeIs('banners.*') ? 'nav_active' : ''; @endphp py-3 px-6 border ">
+                                <a href="{{ route('banners.index') }}" class="">Banners</a>
+                            </li>
+                        </ul>
+                    </div>
+                @endif
                 <div style="width: 100%">
                     <!-- Page Content -->
                     {{ $slot }}
                 </div>
             </div>
         </main>
-        @endif
 
     </div>
 

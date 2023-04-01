@@ -30,6 +30,7 @@ class User extends Authenticatable
         'google_id',
         'provincia',
         'municipio',
+        'admin'
     ];
 
     /**
@@ -42,6 +43,7 @@ class User extends Authenticatable
         'remember_token',
         'two_factor_recovery_codes',
         'two_factor_secret',
+        
     ];
 
     /**
@@ -61,4 +63,9 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+
+    public function isAdmin(){
+        return $this->admin;
+    }
 }

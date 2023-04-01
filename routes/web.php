@@ -7,6 +7,7 @@ use App\Http\Controllers\UsersController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SubcategoryController;
 use App\Http\Controllers\AnalyticsController;
+use App\Http\Controllers\BannerController;
 use App\Http\Controllers\DashboardCotroller;
 use App\Http\Livewire\UsersTable;
 
@@ -25,26 +26,43 @@ Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
+
+/*Route::middleware([
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+    'verified',
+    'admin'
+    ])->group(function () {
+    Route::get('/admin/dashboard', 'AdminController@dashboard');
+    Route::get('/admin/users', 'AdminController@users');
+    Route::get('/admin/settings', 'AdminController@settings');
+});*/
+
+
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
-    'verified'
+    'verified',
 ])->group(function () {
-    
-    Route::get('/dashboard', DashboardCotroller::class)->name('dashboard');
+    Route::middleware([
+        'admin'
+    ])->group(function () {
 
-    Route::controller(UsersController::class)->group(function () {
-        Route::get('/users', UsersTable::class)->name('users.index');
-        Route::get('/users/{id}', 'edit')->name('users.edit');
-        Route::put('/users/{id}', 'update')->name('users.update');
-        Route::delete('/users/{id}', 'destroy')->name('users.destroy');
+        Route::get('/dashboard', DashboardCotroller::class)->name('dashboard');
+
+        Route::controller(UsersController::class)->group(function () {
+            Route::get('/users', UsersTable::class)->name('users.index');
+            Route::get('/users/{id}', 'edit')->name('users.edit');
+            Route::put('/users/{id}', 'update')->name('users.update');
+            Route::delete('/users/{id}', 'destroy')->name('users.destroy');
+        });
+
+        Route::resource('categories', CategoryController::class);
+        Route::resource('subcategories', SubcategoryController::class);
+        Route::resource('banners', BannerController::class);
+
+        Route::get('sales-chart', [AnalyticsController::class, 'salesChart']);
     });
-
-    Route::resource('categories', CategoryController::class);
-    Route::resource('subcategories', SubcategoryController::class);
-
-    Route::get('sales-chart', [AnalyticsController::class, 'salesChart']);
-
 });
 
 //Select2
