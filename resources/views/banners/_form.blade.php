@@ -30,7 +30,8 @@
         <label for="category_id" class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
             {{ __('Category') }}
         </label>
-        <select name="category_id" class="select2 block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500" required>
+        <select name="category_id" id="category_id"
+            class="select2 block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500">
             <option value="">{{ __('Choose a Value') }}</option>
             @foreach ($categories as $category)
                 <option value="{{ $category->id }}">{{ $category->name }}</option>
@@ -67,8 +68,8 @@
                 @endforeach
             </select>
             @if ($errors->has('municipality'))
-            <p class="text-red-500 text-xs italic">{{ $errors->first('municipality') }}</p>
-        @endif
+                <p class="text-red-500 text-xs italic">{{ $errors->first('municipality') }}</p>
+            @endif
         </div>
     </div>
     <div class="flex flex-wrap -mx-3 mb-2">
@@ -76,7 +77,19 @@
             <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-zip">
                 {{ __('Start Date') }}
             </label>
-            <input type="text" id="start_date" name="start_date">
+            <input type="text" id="start_date" name="start_date" class="w-full">
+            @if ($errors->has('start_date'))
+                <p class="text-red-500 text-xs italic">{{ $errors->first('start_date') }}</p>
+            @endif
+        </div>
+        <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+            <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-zip">
+                {{ __('End Date') }}
+            </label>
+            <input type="text" id="end_date" name="end_date" class="w-full">
+            @if ($errors->has('end_date'))
+                <p class="text-red-500 text-xs italic">{{ $errors->first('end_date') }}</p>
+            @endif
         </div>
     </div>
 
@@ -122,14 +135,12 @@
         }
     });
 
-        $('#start_date').daterangepicker({
-            singleDatePicker: true, // Use "true" si solo quiere seleccionar una fecha
-            showDropdowns: true, // Use "true" si desea mostrar los menús desplegables para seleccionar el mes y el año
-            locale: {
-                format: 'YYYY-MM-DD', // Formato de fecha
-                daysOfWeek: ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'], // Nombres de días de la semana
-                monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'] // Nombres de los meses
-            }
-        });
-
+    flatpickr('#start_date', {
+        dateFormat: 'd-m-Y',
+        enableTime: false
+    });
+    flatpickr('#end_date', {
+        dateFormat: 'd-m-Y',
+        enableTime: false
+    });
 </script>
