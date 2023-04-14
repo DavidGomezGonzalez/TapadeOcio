@@ -21,11 +21,19 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
 
-
     <!-- Agrega estos enlaces en la sección HEAD de tu plantilla -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+        integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+        integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+
 
 </head>
 <style>
@@ -57,7 +65,7 @@
                 @if (Auth::guard()->check() &&
                         auth()->user()->isAdmin())
                     <div class="bg-white w-max w-64 border border-gray-200 h-screen" style="">
-                        <ul class="flex flex-col"> 
+                        <ul class="flex flex-col">
                             <li
                                 class="@php echo request()->routeIs('dashboard') ? 'nav_active' : ''; @endphp py-3 px-6 border ">
                                 <a href="{{ route('dashboard') }}" class="">{{ __('Dashboard') }}</a>

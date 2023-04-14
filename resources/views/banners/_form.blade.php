@@ -1,3 +1,11 @@
+<style>
+    #map {
+        height: 400px;
+        width: 100%;
+        margin-bottom: 20px;
+    }
+</style>
+
 <form action="{{ $action }}" method="post">
     @csrf
     @if ($method ?? false)
@@ -43,7 +51,7 @@
     </div>
     <div class="flex flex-wrap -mx-3 mb-2">
         <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-            <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-state">
+            <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="provincia">
                 {{ __('Province') }}
             </label>
             <select
@@ -56,7 +64,7 @@
             </select>
         </div>
         <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-            <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-zip">
+            <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="municipality">
                 {{ __('City') }}
             </label>
             <select
@@ -74,7 +82,7 @@
     </div>
     <div class="flex flex-wrap -mx-3 mb-2">
         <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-            <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-zip">
+            <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="start_date">
                 {{ __('Start Date') }}
             </label>
             <input type="text" id="start_date" name="start_date" class="w-full">
@@ -83,7 +91,7 @@
             @endif
         </div>
         <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-            <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-zip">
+            <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="end_date">
                 {{ __('End Date') }}
             </label>
             <input type="text" id="end_date" name="end_date" class="w-full">
@@ -92,7 +100,23 @@
             @endif
         </div>
     </div>
+    <div class="form-group">
+        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="place">
+            {{ __('Place') }}
+        </label>
+        <input type="text" class="form-control" id="place" name="place">
+    </div>
 
+    <div class="form-group" style="/*display:none;*/">
+        <label for="latitud">Latitud</label>
+        <input type="text" class="form-control" id="latitud" name="latitud">
+    </div>
+    <div class="form-group" style="/*display:none;*/">
+        <label for="longitud">Longitud</label>
+        <input type="text" class="form-control" id="longitud" name="longitud">
+    </div>
+
+    <div id="map"></div>
 
     <button type="submit"
         class="btn btn-primary bg-blue-500 text-white p-2 rounded hover:bg-blue-600">{{ $buttonText }}</button>
@@ -143,4 +167,55 @@
         dateFormat: 'd-m-Y',
         enableTime: false
     });
+
+
+    // Crea el mapa en el contenedor "map" y establece la vista inicial en el centro del mundo
+    var map = L.map('map').setView([51.505, -0.09], 13);
+
+    // Crea un marcador en la posición [0, 0] y añádelo al mapa
+    var marker = L.marker([51.505, -0.09]).addTo(map);
+
+    // Añade el control de mapa de OpenStreetMap al mapa
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+        maxZoom: 18
+    }).addTo(map);
+
+
+    // Crea un objeto Geocoder de Leaflet para buscar direcciones
+    var geocoder = L.Control.geocoder({
+        inputField: 'place',
+        defaultMarkGeocode: false,
+        collapsed: true,
+        placeholder: 'Ingrese una dirección',
+        errorMessage: 'No se encontró la dirección',
+        geocoder: L.Control.Geocoder.nominatim()
+    }).on('markgeocode', function(e) {
+        // Actualiza la posición del marcador y los campos ocultos al seleccionar una dirección
+        var location = e.geocode.center;
+        marker.setLatLng(location);
+        map.setView(location, 13);
+        document.getElementById('latitud').value = location.lat;
+        document.getElementById('longitud').value = location.lng;
+    }).addTo(map);
+
+    map.on('click', function(e) {
+        geocoder.reverse(e.latlng, map.options.crs.scale(map.getZoom()), function(results) {
+          var r = results[0];
+          if (r) {
+            if (marker) {
+              marker
+                .setLatLng(r.center)
+                .setPopupContent(r.html || r.name)
+                .openPopup();
+            } else {
+              marker = L.marker(r.center)
+                .bindPopup(r.name)
+                .addTo(map)
+                .openPopup();
+            }
+          }
+        });
+      });
+
 </script>

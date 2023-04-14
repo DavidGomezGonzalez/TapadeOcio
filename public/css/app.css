@@ -1,0 +1,70 @@
+.border-andalusia {
+    border-color: #006633;
+}
+
+.color-andalusia{
+    color: #006633;
+}
+
+.bg-andalusia {
+    background-color: rgb(0, 102, 51);
+}
+
+.hover\:bg-andalusia:hover {
+    background-color: rgb(0, 76, 38);
+}
+
+.btn-rojo{
+    color:white; 
+    border: 2px solid; 
+    border-radius: 50%; 
+    padding: 7px;
+    background-color: red;
+}
+
+
+.btn-andalusia{
+    color: white;    
+    border: 2px solid; 
+    border-radius: 50%; 
+    padding: 7px;
+    background-color: #006633;
+}
+
+.btn-ver{
+    color: white;    
+    border: 2px solid; 
+    border-radius: 50%; 
+    padding: 5px;
+    background-color: #2196f3;
+}
+
+a:hover {
+    opacity: 0.7;
+}
+
+
+.select2-container {
+    height: 30px;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import 'node_modules/select2/dist/css/select2.min.css';
+
+[type='text']:focus, [type='email']:focus, [type='url']:focus, [type='password']:focus, [type='number']:focus, [type='date']:focus, [type='datetime-local']:focus, [type='month']:focus, [type='search']:focus, [type='tel']:focus, [type='time']:focus, [type='week']:focus, [multiple]:focus, textarea:focus, select:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    --tw-ring-inset: var(--tw-empty,/*!*/ /*!*/);
+    --tw-ring-offset-width: 0px;
+    --tw-ring-offset-color: #fff;
+    --tw-ring-color: #006633;
+    --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+    --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(1px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+    box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+    border-color: #006633;
+}
+
+
+
