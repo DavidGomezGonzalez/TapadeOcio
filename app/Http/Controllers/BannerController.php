@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Municipio;
 use App\Models\Provincia;
 use Illuminate\Http\Request;
+use GuzzleHttp\Client;
 
 class BannerController extends Controller
 {
@@ -148,5 +149,41 @@ class BannerController extends Controller
     {
         $banner->delete();
         return redirect()->route('banners.index');
+    }
+
+
+    public function search_geolocation(Request $request){
+
+        $datos = array();
+        //$q = '1600 Pennsylvania Ave NW, Washington, DC 20500';
+        $q = $request->input('address');
+
+        $client = new Client();
+        
+        $response = $client->request('GET', 'https://nominatim.openstreetmap.org/search', [
+            'query' => [
+                'q' => $q,
+                'format' => 'json',
+                'addressdetails' => 1,
+                'limit' => 1
+            ]
+        ]);
+        
+        $body   = $response->getBody();
+        $result = json_decode($body, true);
+
+
+        foreach ($result as $k => $v) {
+            $datos['name']  = $v['display_name'];
+            $datos['ltglng'] =  $v['lat'].";".$v['lon'];
+        }
+
+
+
+        //$latitud = $result[0]['lat'];
+        //$longitud = $result[0]['lon'];
+
+
+        echo json_encode($datos);
     }
 }

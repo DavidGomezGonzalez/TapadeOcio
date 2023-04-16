@@ -61,6 +61,8 @@ Route::middleware([
         Route::resource('subcategories', SubcategoryController::class);
         Route::resource('banners', BannerController::class);
 
+        Route::get('/search_geolocation', [BannerController::class, 'search_geolocation'])->name('search.geolocation');
+
         Route::get('sales-chart', [AnalyticsController::class, 'salesChart']);
     });
 });

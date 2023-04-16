@@ -4,6 +4,10 @@
         width: 100%;
         margin-bottom: 20px;
     }
+
+    .ui-autocomplete {
+        z-index: 9999;
+    }
 </style>
 
 <form action="{{ $action }}" method="post">
@@ -104,18 +108,19 @@
         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="place">
             {{ __('Place') }}
         </label>
-        <input type="text" class="form-control" id="place" name="place">
+        <input type="text" class="form-control w-full" id="place" name="place">
     </div>
 
-    <div class="form-group" style="/*display:none;*/">
+    <div class="form-group" style="display:none;">
         <label for="latitud">Latitud</label>
         <input type="text" class="form-control" id="latitud" name="latitud">
     </div>
-    <div class="form-group" style="/*display:none;*/">
+    <div class="form-group" style="display:none;">
         <label for="longitud">Longitud</label>
         <input type="text" class="form-control" id="longitud" name="longitud">
     </div>
 
+    <br />
     <div id="map"></div>
 
     <button type="submit"
@@ -201,21 +206,40 @@
 
     map.on('click', function(e) {
         geocoder.reverse(e.latlng, map.options.crs.scale(map.getZoom()), function(results) {
-          var r = results[0];
-          if (r) {
-            if (marker) {
-              marker
-                .setLatLng(r.center)
-                .setPopupContent(r.html || r.name)
-                .openPopup();
-            } else {
-              marker = L.marker(r.center)
-                .bindPopup(r.name)
-                .addTo(map)
-                .openPopup();
+            var r = results[0];
+            if (r) {
+                if (marker) {
+                    marker
+                        .setLatLng(r.center)
+                        .setPopupContent(r.html || r.name)
+                        .openPopup();
+                } else {
+                    marker = L.marker(r.center)
+                        .bindPopup(r.name)
+                        .addTo(map)
+                        .openPopup();
+                }
             }
-          }
         });
-      });
+    });
 
+    $('#place').autocomplete({
+        source: function(request, response) {
+            $.ajax({
+                type: 'GET',
+                url: '{{ route('search.geolocation') }}',
+                data: {
+                    address: $('#place').val()
+                },
+                success: function(data) {
+                    var datos = JSON.parse(data);
+                    response([datos]);
+                }
+            });
+        },
+        select: function( event, ui ) {
+            $('#place').val(ui.item.label).trigger('change');
+        },
+        minLength : 3
+    });
 </script>
