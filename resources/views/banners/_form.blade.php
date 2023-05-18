@@ -10,19 +10,12 @@
     }
 </style>
 
-<form action="{{ $action }}" method="post">
+<form action="{{ $action }}" method="post" enctype="multipart/form-data">
     @csrf
     @if ($method ?? false)
         @method($method)
     @endif
     @csrf
-    <div class="form-group">
-        <label for="image" class="font-bold">{{ __('Image') }}</label>
-        <input type="file" name="image" id="image" class="form-control">
-        @if ($errors->has('image'))
-            <p class="text-red-500 text-xs italic">{{ $errors->first('image') }}</p>
-        @endif
-    </div>
     <div class="form-group">
         <label for="title" class="font-bold">{{ __('Title') }}</label>
         <input type="text" name="title" id="title" class="form-control w-full"
@@ -55,12 +48,12 @@
     </div>
     <div class="flex flex-wrap -mx-3 mb-2">
         <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-            <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="provincia">
+            <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="province">
                 {{ __('Province') }}
             </label>
             <select
                 class="select2 block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                id="provincia" name="provincia">
+                id="province" name="province">
                 <option value="">{{ __('Choose a Value') }}</option>
                 @foreach ($provincias as $p)
                     <option value="{{ $p->id }}">{{ $p->provincia }}</option>
@@ -89,18 +82,20 @@
             <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="start_date">
                 {{ __('Start Date') }}
             </label>
-            <input type="text" id="start_date" name="start_date" class="w-full">
-            @if ($errors->has('start_date'))
-                <p class="text-red-500 text-xs italic">{{ $errors->first('start_date') }}</p>
+            <input type="text" id="start_time" name="start_time" class="w-full"
+                value="{{ old('start_time', $banner->start_time ?? '') }}">
+            @if ($errors->has('start_time'))
+                <p class="text-red-500 text-xs italic">{{ $errors->first('start_time') }}</p>
             @endif
         </div>
         <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
             <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="end_date">
                 {{ __('End Date') }}
             </label>
-            <input type="text" id="end_date" name="end_date" class="w-full">
-            @if ($errors->has('end_date'))
-                <p class="text-red-500 text-xs italic">{{ $errors->first('end_date') }}</p>
+            <input type="text" id="end_time" name="end_time" class="w-full"
+                value="{{ old('end_time', $banner->end_time ?? '') }}">
+            @if ($errors->has('end_time'))
+                <p class="text-red-500 text-xs italic">{{ $errors->first('end_time') }}</p>
             @endif
         </div>
     </div>
@@ -108,20 +103,57 @@
         <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="place">
             {{ __('Place') }}
         </label>
-        <input type="text" class="form-control w-full" id="place" name="place">
+        <input type="text" class="form-control w-full" id="place" name="place"
+            value="{{ old('place', $banner->place ?? '') }}">
     </div>
 
     <div class="form-group" style="display:none;">
         <label for="latitud">Latitud</label>
-        <input type="text" class="form-control" id="latitud" name="latitud">
+        <input type="text" class="form-control" id="latitud" name="latitud"
+            value="{{ old('latitud', $banner->latitud ?? '') }}">
     </div>
     <div class="form-group" style="display:none;">
         <label for="longitud">Longitud</label>
-        <input type="text" class="form-control" id="longitud" name="longitud">
+        <input type="text" class="form-control" id="longitud" name="longitud"
+            value="{{ old('longitud', $banner->longitud ?? '') }}">
     </div>
 
     <br />
-    <div id="map"></div>
+
+    <div class="form-group">
+        <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="place">
+            {{ __('Map') }}
+        </label>
+        <div id="map"></div>
+    </div>
+
+    <div class="form-group">
+        <label for="image" class="font-bold">{{ __('Image') }}</label>
+        <input type="file" name="image" id="image" class="form-control">
+        @if ($errors->has('image'))
+            <p class="text-red-500 text-xs italic">{{ $errors->first('image') }}</p>
+        @endif
+    </div>
+
+    @if (isset($banner->image))
+        <div class="flex justify-start items-center gap-4">
+            <div>
+                <img id="image-preview" src="{{ 'data:image/png;base64,' . $banner->image }}" alt="Preview Image"
+                    style="max-width: 100%; max-height: 34vh; {{ $banner->image ? '' : 'display: none;' }}">
+            </div>
+            <a style="{{ $banner->image ? '' : 'display: none;' }}" x-data="{ tooltip: 'Delete' }" id="btn-delete-image"
+                href="#" class="delete-button btn-rojo h-10">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="h-5 w-5" x-tooltip="tooltip">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                </svg>
+            </a>
+        </div>
+    @endif
+
+
+    <br>
 
     <button type="submit"
         class="btn btn-primary bg-blue-500 text-white p-2 rounded hover:bg-blue-600">{{ $buttonText }}</button>
@@ -129,13 +161,13 @@
 
 
 <script type="text/javascript">
-    $('#category_id').val({{ old('category_id', '') }});
+    $('#category_id').val({{ old('category_id', $banner->category_id ?? '') }});
     $('#category_id').select2();
 
-    $('#provincia').val({{ old('provincia', '') }});
-    $('#provincia').select2();
+    $('#province').val({{ old('province', $banner->province ?? '') }});
+    $('#province').select2();
 
-    $('#municipality').val({{ old('municipality', '') }});
+    $('#municipality').val({{ old('municipality', $banner->municipality ?? '') }});
     var path = "{{ route('autocomplete') }}";
     $('#municipality').select2({
         placeholder: 'Choose a Value',
@@ -147,7 +179,7 @@
                 return {
                     q: params.term, // search term
                     page: params.page,
-                    provincia: $('#provincia').val(),
+                    provincia: $('#province').val(),
                 };
             },
             processResults: function(data) {
@@ -164,21 +196,46 @@
         }
     });
 
-    flatpickr('#start_date', {
-        dateFormat: 'd-m-Y',
-        enableTime: false
-    });
-    flatpickr('#end_date', {
-        dateFormat: 'd-m-Y',
-        enableTime: false
-    });
+    const fechaInicioInput = document.getElementById('start_time');
+    const fechaFinInput = document.getElementById('end_time');
+    const fechaHoraActual = new Date(); // Obtener la fecha y hora actual
 
+    const flatpickrOptions = {
+        dateFormat: 'Y-m-d H:i:s', // Formato del valor interno
+        altFormat: 'd/m/Y H:i:s', // Formato de visualización
+        enableTime: true, // Habilitar la selección de hora
+        time_24hr: true, // Utilizar formato de 24 horas sin AM o PM
+        altInput: true, // Mostrar el valor interno en un campo de entrada oculto
+        minDate: 'today',
+        onChange: function(selectedDates, dateStr, instance) {
+            if (instance === fechaInicioPicker) {
+                // Validación al cambiar la fecha de inicio
+                fechaFinPicker.set('minDate', selectedDates[0]); // Establecer fecha mínima en el campo de fin
+                if (fechaFinInput.value && fechaInicioPicker.selectedDates[0] > fechaFinPicker.selectedDates[0]) {
+                    fechaFinPicker.clear(); // Limpiar el campo de fin si la fecha de inicio es posterior a la fecha de fin
+                    fechaFinInput._flatpickr.setDate(fechaInicioPicker.selectedDates[0]);
+                }
+            }
+        }
+    };
+
+    const fechaInicioPicker = flatpickr(fechaInicioInput, flatpickrOptions);
+    const fechaFinPicker = flatpickr(fechaFinInput, flatpickrOptions);
+
+    var latitud = $('#latitud').val();
+    var longitud = $('#longitud').val();
+    if (latitud && longitud)
+        var position = [$('#latitud').val(), $('#longitud').val()];
+    else
+        var position = [37.4384292, -4.1980422];
 
     // Crea el mapa en el contenedor "map" y establece la vista inicial en el centro del mundo
-    var map = L.map('map').setView([51.505, -0.09], 13);
+    var map = L.map('map').setView(position, 15);
 
-    // Crea un marcador en la posición [0, 0] y añádelo al mapa
-    var marker = L.marker([51.505, -0.09]).addTo(map);
+    // Crea un marcador en la posición y añádelo al mapa
+    var marker;
+    if (latitud && longitud)
+        marker = L.marker(position).addTo(map);
 
     // Añade el control de mapa de OpenStreetMap al mapa
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -188,7 +245,7 @@
 
 
     // Crea un objeto Geocoder de Leaflet para buscar direcciones
-    var geocoder = L.Control.geocoder({
+    /*var geocoder = L.Control.geocoder({
         inputField: 'place',
         defaultMarkGeocode: false,
         collapsed: true,
@@ -202,7 +259,7 @@
         map.setView(location, 13);
         document.getElementById('latitud').value = location.lat;
         document.getElementById('longitud').value = location.lng;
-    }).addTo(map);
+    }).addTo(map);*/
 
     map.on('click', function(e) {
         geocoder.reverse(e.latlng, map.options.crs.scale(map.getZoom()), function(results) {
@@ -233,13 +290,64 @@
                 },
                 success: function(data) {
                     var datos = JSON.parse(data);
+                    //console.log(datos);
                     response([datos]);
                 }
             });
         },
-        select: function( event, ui ) {
-            $('#place').val(ui.item.label).trigger('change');
+        select: function(event, ui) {
+            $('#latitud').val(ui.item.lat);
+            $('#longitud').val(ui.item.lon);
+            var position = [$('#latitud').val(), $('#longitud').val()];
+            if (marker)
+                map.removeLayer(marker);
+            map.flyTo(position, 15);
+            marker = L.marker(position).addTo(map);
         },
-        minLength : 3
+        minLength: 3
+    });
+
+
+    const imageInput = document.getElementById('image');
+    const imagePreview = document.getElementById('image-preview');
+
+    imageInput.addEventListener('change', function() {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                imagePreview.src = reader.result;
+                imagePreview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            imagePreview.src = '#';
+            imagePreview.style.display = 'none';
+        }
+    });
+
+
+    $(document).on('click', '#btn-delete-image', function(e) {
+        e.preventDefault();
+        const bannerId = '{{ old('id', $banner->id ?? '') }}';
+        const url = '/banners/' + bannerId + '/delete-image';
+
+        $.ajax({
+            url: url,
+            type: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                $('#image-preview').hide();
+                //$('#image-preview').attr('src', '#');
+                $('#btn-delete-image').hide();
+                // Do something on success, e.g. hide the image preview
+            },
+            error: function(xhr, status, error) {
+                console.log(xhr.responseText);
+                // Do something on error, e.g. display an error message
+            }
+        });
     });
 </script>

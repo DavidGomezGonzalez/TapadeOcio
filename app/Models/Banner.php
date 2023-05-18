@@ -9,5 +9,16 @@ class Banner extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['image', 'title', 'content', 'category_id', 'municipality', 'start_date', 'end_date', 'place'];
+    protected $fillable = ['image', 'title', 'content', 'category_id', 'province', 'municipality', 'latitud', 'longitud', 'start_time', 'end_time', 'place'];
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function municipio()
+    {
+        return $this->belongsTo(Municipio::class);
+    }
+
 }

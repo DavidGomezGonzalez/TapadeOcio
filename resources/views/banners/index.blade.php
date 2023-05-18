@@ -1,3 +1,6 @@
+@php
+    use App\Models\Municipio;
+@endphp
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
@@ -22,7 +25,7 @@
                                 <tr>
                                     <td class="border px-4 py-2">{{ $banner->title }}</td>
                                     <td class="border px-4 py-2">{{ $banner->category->name }}</td>
-                                    <td class="border px-4 py-2">{{ $banner->municipality->municipio }}</td>
+                                    <td class="border px-4 py-2">{{ Municipio::getMunicipioName($banner->municipality) }}</td>
                                     <td class="border px-4 py-2">
                                         <div class="flex justify-center gap-4">
                                             <a href="{{ route('banners.show', $banner->id) }}" class="btn-ver">
@@ -73,7 +76,7 @@
                                                 style="display: inline-block">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-danger">Eliminar</button>
+                                                <button type="submit" id="btn-delete-{{ $banner->id }}" class="btn btn-danger ">Eliminar</button>
                                             </form>
                                         </div>
                                     </td>

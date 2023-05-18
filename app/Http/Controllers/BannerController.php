@@ -18,7 +18,7 @@ class BannerController extends Controller
      */
     public function index()
     {
-        $banners = Banner::with(['category', 'municipality'])->get();
+        $banners = Banner::with(['category', 'municipio'])->get();
         return view('banners.index', compact('banners'));
     }
 
@@ -29,10 +29,10 @@ class BannerController extends Controller
      */
     public function create()
     {
-        $categories = Category::all();
+        $categories     = Category::all();
         $municipalities = Municipio::all();
-        $provincias = Provincia::all();
-        return view('banners.create', compact('categories', 'municipalities','provincias'));
+        $provincias     = Provincia::all();
+        return view('banners.create', compact('categories', 'municipalities', 'provincias'));
     }
 
     /**
@@ -50,25 +50,34 @@ class BannerController extends Controller
             'title'        => 'required',
             'content'      => 'required',
             'category_id'  => 'required',
+            'province'     => 'required',
             'municipality' => 'required',
-            'start_date'   => 'required|date',
-            'end_date'     => 'required|date',
+            'latitud'      => 'nullable|string',
+            'longitud'     => 'nullable|string',
+            'start_time'   => 'required|date',
+            'end_time'     => 'required|date',
             'place'        => 'nullable'
         ]);
 
         $model->title        = $validatedData['title'];
         $model->content      = $validatedData['content'];
         $model->category_id  = $validatedData['category_id'];
+        $model->province     = $validatedData['province'];
         $model->municipality = $validatedData['municipality'];
-        $model->start_date   = $validatedData['start_date'];
-        $model->end_date     = $validatedData['end_date'];
+        $model->latitud      = $validatedData['latitud'];
+        $model->longitud     = $validatedData['longitud'];
+        //$model->start_time   = cambiarFormatoFecha($validatedData['start_time']);
+        //$model->end_time     = cambiarFormatoFecha($validatedData['end_time']);
+        $model->start_time   = $validatedData['start_time'];
+        $model->end_time     = $validatedData['end_time'];
         $model->place        = $validatedData['place'];
 
         if ($request->hasFile('image')) {
             $image = $request->file('image');
-            $filename = time() . '.' . $image->getClientOriginalExtension();
-            $image->storeAs('public/images', $filename);
-            $model->image = 'storage/images/' . $filename;
+            $data = file_get_contents($image);
+            $base64 = base64_encode($data);
+            $model->image = $base64;
+            $model->save();
         }
 
         $model->save();
@@ -94,9 +103,11 @@ class BannerController extends Controller
      */
     public function edit(Banner $banner)
     {
-        $categories = Category::all();
+        $categories     = Category::all();
         $municipalities = Municipio::all();
-        return view('banners.edit', compact('banner', 'categories', 'municipalities'));
+        $provincias     = Provincia::all();
+
+        return view('banners.edit', compact('banner', 'categories', 'municipalities', 'provincias'));
     }
 
     /**
@@ -109,29 +120,38 @@ class BannerController extends Controller
     public function update(Request $request, Banner $banner)
     {
         $request->validate([
-            //'image' => 'required|image',
-            'title' => 'required',
-            'content' => 'required',
-            'category_id' => 'required',
+            'image'        => 'nullable',
+            'title'        => 'required',
+            'content'      => 'required',
+            'category_id'  => 'required',
+            'province'     => 'required',
             'municipality' => 'required',
-            'start_date' => 'required',
-            'end_date' => 'required',
-            'place' => 'required'
+            'latitud'      => 'nullable|string',
+            'longitud'     => 'nullable|string',
+            'start_time'   => 'required|date',
+            'end_time'     => 'required|date',
+            'place'        => 'required'
         ]);
 
-        $banner->title = $request->title;
-        $banner->content = $request->content;
-        $banner->category_id = $request->category_id;
-        $banner->municipality_id = $request->municipality_id;
-        $banner->start_date = $request->start_date;
-        $banner->end_date = $request->end_date;
-        $banner->place = $request->place;
+        $banner->title           = $request->title;
+        $banner->content         = $request->content;
+        $banner->category_id     = $request->category_id;
+        $banner->province        = $request->province;
+        $banner->municipality    = $request->municipality;
+        $banner->latitud         = $request->latitud;
+        $banner->longitud        = $request->longitud;
+        //$banner->start_time      = cambiarFormatoFecha($request->start_time);
+        //$banner->end_time        = cambiarFormatoFecha($request->end_time);
+        $banner->start_time      = $request->start_time;
+        $banner->end_time        = $request->end_time;
+        $banner->place           = $request->place;
 
         if ($request->hasFile('image')) {
             $image = $request->file('image');
-            $filename = time() . '.' . $image->getClientOriginalExtension();
-            $image->storeAs('public/images', $filename);
-            $banner->image = 'storage/images/' . $filename;
+            $data = file_get_contents($image);
+            $base64 = base64_encode($data);
+            $banner->image = $base64;
+            $banner->save();
         }
 
         $banner->save();
@@ -152,38 +172,41 @@ class BannerController extends Controller
     }
 
 
-    public function search_geolocation(Request $request){
+    public function search_geolocation(Request $request)
+    {
 
-        $datos = array();
+        $datos  = array();
         //$q = '1600 Pennsylvania Ave NW, Washington, DC 20500';
-        $q = $request->input('address');
-
+        $q      = $request->input('address');
         $client = new Client();
-        
+
         $response = $client->request('GET', 'https://nominatim.openstreetmap.org/search', [
             'query' => [
                 'q' => $q,
                 'format' => 'json',
-                'addressdetails' => 1,
-                'limit' => 1
+                'addressdetails' => 5,
+                'limit' => 5
             ]
         ]);
-        
+
         $body   = $response->getBody();
         $result = json_decode($body, true);
 
-
         foreach ($result as $k => $v) {
-            $datos['name']  = $v['display_name'];
-            $datos['ltglng'] =  $v['lat'].";".$v['lon'];
+            $datos['label'] = $v['display_name'];
+            $datos['lat']   =  $v['lat'];
+            $datos['lon']   =  $v['lon'];
+            $datos['all']   =  $v;
         }
 
-
-
-        //$latitud = $result[0]['lat'];
-        //$longitud = $result[0]['lon'];
-
-
         echo json_encode($datos);
+    }
+
+    public function deleteImage(Banner $banner)
+    {
+        $banner->image = null;
+        $banner->save();
+
+        return response()->json(['success' => true]);
     }
 }

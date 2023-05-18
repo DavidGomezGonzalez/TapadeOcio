@@ -10,6 +10,8 @@ use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\BannerController;
 use App\Http\Controllers\DashboardCotroller;
 use App\Http\Livewire\UsersTable;
+use App\Models\Banner;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,7 +25,18 @@ use App\Http\Livewire\UsersTable;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+
+    $user = 0;
+    $municipio = 0;
+    if (Auth::guard()->check()) { //Loggueado
+        //Obtener usuario
+        $user      = Auth::guard()->user();
+        $municipio = $user->municipio;
+    }
+
+    $banners = Banner::with(['category', 'municipio'])->get();
+
+    return view('welcome', ['municipio' => $municipio, 'banners' => $banners]);
 })->name('welcome');
 
 
@@ -60,6 +73,7 @@ Route::middleware([
         Route::resource('categories', CategoryController::class);
         Route::resource('subcategories', SubcategoryController::class);
         Route::resource('banners', BannerController::class);
+        Route::post('/banners/{banner}/delete-image', [BannerController::class, 'deleteImage'])->name('banners.deleteImage');
 
         Route::get('/search_geolocation', [BannerController::class, 'search_geolocation'])->name('search.geolocation');
 
