@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('content');
             $table->unsignedBigInteger('category_id');
+            $table->unsignedBigInteger('subcategory_id')->nullable();
             $table->unsignedBigInteger('province');
             $table->unsignedBigInteger('municipality');
             $table->string('latitud');
@@ -29,6 +30,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('category_id')->references('id')->on('categories');
+            $table->foreign('subcategory_id')->references('id')->on('subcategories');
             $table->foreign('province')->references('id')->on('provincias');
             $table->foreign('municipality')->references('id')->on('municipios');
         });

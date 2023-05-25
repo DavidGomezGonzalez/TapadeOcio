@@ -11,6 +11,7 @@ use App\Http\Controllers\BannerController;
 use App\Http\Controllers\DashboardCotroller;
 use App\Http\Livewire\UsersTable;
 use App\Models\Banner;
+use App\Models\Subcategory;
 use Illuminate\Support\Facades\Auth;
 
 /*
@@ -24,7 +25,7 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-Route::get('/', function () {
+/*Route::get('/', function () {
 
     $user = 0;
     $municipio = 0;
@@ -37,7 +38,12 @@ Route::get('/', function () {
     $banners = Banner::with(['category', 'municipio'])->get();
 
     return view('welcome', ['municipio' => $municipio, 'banners' => $banners]);
-})->name('welcome');
+})->name('welcome');*/
+
+Route::get('/', [BannerController::class, 'welcome'])->name('welcome');
+Route::get('/banner/{id}', [BannerController::class, 'view'])->name('banners.view');
+Route::post('banners/filter', [App\Http\Controllers\BannerController::class, 'filter']);
+
 
 
 /*Route::middleware([
@@ -82,7 +88,8 @@ Route::middleware([
 });
 
 //Select2
-Route::get('autocomplete', [MunicipioController::class, 'autocomplete'])->name('autocomplete');
+Route::get('autocomplete', [MunicipioController::class, 'autocomplete'])->name('municipality-autocomplete');
+Route::get('select2', [SubcategoryController::class, 'select2'])->name('subcategory-autocomplete');
 
 Route::controller(GoogleController::class)->group(function () {
     Route::get('auth/google', 'redirectToGoogle')->name('auth.google');

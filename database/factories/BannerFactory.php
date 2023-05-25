@@ -27,13 +27,19 @@ class BannerFactory extends Factory
      */
     public function definition()
     {
+
+        $provincia = \App\Models\Provincia::has('municipios')->inRandomOrder()->first();
+
         return [
             'image' => base64_encode(file_get_contents($this->faker->imageUrl())),
             'title' => $this->faker->sentence(),
             'content' => $this->faker->paragraph(),
-            'category_id' => \App\Models\Category::inRandomOrder()->first()->id,
-            'province' => \App\Models\Provincia::inRandomOrder()->first()->id,
-            'municipality' => \App\Models\Municipio::inRandomOrder()->first()->id,
+            'category_id' => $category = \App\Models\Category::inRandomOrder()->first(),
+            'subcategory_id' => function () use ($category) {
+                return $category->subcategories->count() ? $category->subcategories->random()->id : null;
+            },
+            'province' => $provincia->id,
+            'municipality' => optional($provincia->municipios->random())->id,
             'latitud' => $this->faker->latitude(),
             'longitud' => $this->faker->longitude(),
             'start_time' => $this->faker->dateTimeBetween('now', '+1 month'),
@@ -42,5 +48,4 @@ class BannerFactory extends Factory
             'created_at' => $this->faker->dateTimeBetween('-1 month', 'now')
         ];
     }
-
 }

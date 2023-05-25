@@ -6,8 +6,12 @@ use App\Models\Banner;
 use App\Models\Category;
 use App\Models\Municipio;
 use App\Models\Provincia;
+use App\Models\Subcategory;
+use Carbon\Carbon;
+use DateTime;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Auth;
 
 class BannerController extends Controller
 {
@@ -16,6 +20,70 @@ class BannerController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function welcome()
+    {
+        $today = Carbon::today();
+
+        $user = 0;
+        $municipio = 0;
+        if (Auth::guard()->check()) { //Loggueado
+            //Obtener usuario
+            $user = Auth::guard()->user();
+            $municipio = $user->municipio;
+        }
+
+        $categories = Category::with('subcategories')->get();
+
+        $todayBanners = Banner::whereDate('start_time', '=', $today);
+        $upcomingBanners = Banner::whereDate('start_time', '>', $today);
+
+        if ($user && $municipio) { // Si el usuario está autentificado y el municipio está relleno
+            $todayBanners = $todayBanners->where('municipality', $municipio);
+            $upcomingBanners = $upcomingBanners->where('municipality', $municipio);
+        }
+
+        $todayBanners = $todayBanners->whereIn('category_id', $categories->pluck('id')->toArray())->get();
+        $upcomingBanners = $upcomingBanners->whereIn('category_id', $categories->pluck('id')->toArray())->get();
+
+        return view('welcome', [
+            'todayBanners' => $todayBanners,
+            'upcomingBanners' => $upcomingBanners,
+            'municipio' => $municipio,
+            'categories' => $categories
+        ]);
+    }
+
+
+
+    public function filter(Request $request)
+    {
+        $category_ids = $request->category_ids;
+
+        if (is_null($category_ids)) {
+            return response()->json(['message' => 'category_ids es nulo']);
+        }
+
+        $todayBanners = Banner::with(['category', 'municipio'])
+            ->where('municipality', $request->municipio)
+            ->whereDate('start_time', Carbon::today())
+            ->whereIn('category_id', $category_ids)
+            ->get();
+
+        $upcomingBanners = Banner::with(['category', 'municipio'])
+            ->where('municipality', $request->municipio)
+            ->whereDate('start_time', '>', Carbon::today())
+            ->whereIn('category_id', $category_ids)
+            ->get();
+
+        $view = view('banners.banners_partial', [
+            'todayBanners' => $todayBanners,
+            'upcomingBanners' => $upcomingBanners
+        ])->render();
+
+        return response()->json(['html' => $view]);
+    }
+
+
     public function index()
     {
         $banners = Banner::with(['category', 'municipio'])->get();
@@ -32,7 +100,8 @@ class BannerController extends Controller
         $categories     = Category::all();
         $municipalities = Municipio::all();
         $provincias     = Provincia::all();
-        return view('banners.create', compact('categories', 'municipalities', 'provincias'));
+        $subcategories  = Subcategory::all();
+        return view('banners.create', compact('categories', 'municipalities', 'provincias', 'subcategories'));
     }
 
     /**
@@ -50,6 +119,7 @@ class BannerController extends Controller
             'title'        => 'required',
             'content'      => 'required',
             'category_id'  => 'required',
+            'subcategory_id'  => 'nullable',
             'province'     => 'required',
             'municipality' => 'required',
             'latitud'      => 'nullable|string',
@@ -62,6 +132,7 @@ class BannerController extends Controller
         $model->title        = $validatedData['title'];
         $model->content      = $validatedData['content'];
         $model->category_id  = $validatedData['category_id'];
+        $model->subcategory_id  = $validatedData['subcategory_id'];
         $model->province     = $validatedData['province'];
         $model->municipality = $validatedData['municipality'];
         $model->latitud      = $validatedData['latitud'];
@@ -104,10 +175,11 @@ class BannerController extends Controller
     public function edit(Banner $banner)
     {
         $categories     = Category::all();
+        $subcategories  = Subcategory::all();
         $municipalities = Municipio::all();
         $provincias     = Provincia::all();
 
-        return view('banners.edit', compact('banner', 'categories', 'municipalities', 'provincias'));
+        return view('banners.edit', compact('banner', 'categories', 'subcategories', 'municipalities', 'provincias'));
     }
 
     /**
@@ -124,18 +196,20 @@ class BannerController extends Controller
             'title'        => 'required',
             'content'      => 'required',
             'category_id'  => 'required',
+            'subcategory_id'  => 'nullable',
             'province'     => 'required',
             'municipality' => 'required',
             'latitud'      => 'nullable|string',
             'longitud'     => 'nullable|string',
             'start_time'   => 'required|date',
             'end_time'     => 'required|date',
-            'place'        => 'required'
+            'place'        => 'nullable'
         ]);
 
         $banner->title           = $request->title;
         $banner->content         = $request->content;
         $banner->category_id     = $request->category_id;
+        $banner->subcategory_id     = $request->subcategory_id;
         $banner->province        = $request->province;
         $banner->municipality    = $request->municipality;
         $banner->latitud         = $request->latitud;
@@ -169,6 +243,14 @@ class BannerController extends Controller
     {
         $banner->delete();
         return redirect()->route('banners.index');
+    }
+
+
+    public function view($id)
+    {
+        $banner = Banner::with('category','subcategory','municipio', 'provincia')->findOrFail($id);
+
+        return view('banners.view', ['banner' => $banner]);
     }
 
 

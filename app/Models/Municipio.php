@@ -9,14 +9,23 @@ class Municipio extends Model
 {
     use HasFactory;
 
-    public static function getMunicipioName($id){
+    public static function getMunicipioName($id)
+    {
         return Municipio::select('municipio')->where('id', $id)->get()->value('municipio');
     }
 
-    public static function getAll(){
+    public static function getAll()
+    {
         return Municipio::get();
     }
 
+    public function provincia()
+    {
+        return $this->belongsTo(Provincia::class);
+    }
+
+    public function banners()
+    {
+        return $this->hasMany(Banner::class);
+    }
 }
-
-

@@ -43,9 +43,9 @@ class SubcategoryController extends Controller
             'name'        => 'required|max:255',
             'category_id' => 'required',
         ]);
-    
+
         $subcategory = Subcategory::create($validatedData);
-    
+
         return redirect()->route('subcategories.edit', $subcategory);
     }
 
@@ -81,7 +81,7 @@ class SubcategoryController extends Controller
      */
     public function update(Request $request, Subcategory $subcategory)
     {
-        
+
         $validatedData = $request->validate([
             'name'        => 'required|max:255',
             'category_id' => 'required',
@@ -104,5 +104,25 @@ class SubcategoryController extends Controller
     {
         $subcategory->delete();
         return redirect()->route('subcategories.index');
+    }
+
+    public function select2(Request $request)
+    {
+        $data = [];
+        $category_id = $request->get('category_id', 0);
+
+        if ($request->filled('q')) {
+            $data = Subcategory::select("name", "id")
+                ->where('category_id', 'LIKE', '%' . $request->get('q') . '%')
+                ->get();
+        } else {
+            if ($category_id) {
+                $data = Subcategory::select("name", "id")
+                    ->where('category_id', $category_id)
+                    ->get();
+            } else  $data = Subcategory::all();
+        }
+
+        return response()->json($data);
     }
 }

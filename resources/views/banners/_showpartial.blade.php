@@ -20,7 +20,7 @@
     $nombre_mes_fin = strftime('%B', strtotime("01-$mes_fin-2023"));
 @endphp
 
-<div class="text-center">
+<div class="text-center space-y-1 sm:space-y-4">
     {{-- Mostrar la fecha y hora de acuerdo a si es el mismo día o no --}}
     @if ($es_mismo_dia)
         @php
@@ -29,13 +29,12 @@
             $hora_fin = $fecha_fin_obj->format('H:i');
         @endphp
 
-        <div>
-            <span class="text-4xl font-bold block mb-2">{{ $dia_inicio }}</span>
-            <span class="text-lg font-bold block">{{ $nombre_mes_inicio }}</span>
+        <div class="flex sm:block justify-center items-center gap-2">
+            <span class="text-3xl sm:text-4xl font-bold">{{ $dia_inicio }}</span>
+            <span class="text-lg sm:text-xl font-bold">{{ $nombre_mes_inicio }}</span>
         </div>
-        <hr>
-        <div class="text-2xl font-bold">{{ $nombre_dia }}</div>
-        <br />
+        <hr class="my-4 sm:hidden">
+        <div class="text-xl sm:text-2xl font-bold">{{ $nombre_dia }}</div>
         <div class="flex items-center justify-center gap-1">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
@@ -43,10 +42,14 @@
             <span> {{ $hora_inicio }}</span>
         </div>
     @else
-        <span class="text-4xl font-bold block mb-2">{{ $dia_inicio }}</span>
-        <span class="text-lg font-bold block">{{ $nombre_mes_inicio }}</span>
-        <hr class="my-2">
-        <span class="text-4xl font-bold block mb-2">{{ $dia_fin }}</span>
-        <span class="text-lg font-bold block">{{ $nombre_mes_fin }}</span>
+    <div class="flex sm:block justify-center items-center gap-2">
+        <span class="text-3xl sm:text-4xl font-bold">{{ $dia_inicio }}</span>
+        <span class="text-lg sm:text-xl font-bold">{{ $nombre_mes_inicio }}</span>
+    </div>
+    <hr class="my-2 sm:hidden">
+    <div class="flex sm:block justify-center items-center gap-2">
+        <span class="text-3xl sm:text-4xl font-bold">{{ $dia_fin }}</span>
+        <span class="text-lg sm:text-xl font-bold">{{ $nombre_mes_fin }}</span>
+    </div>
     @endif
 </div>

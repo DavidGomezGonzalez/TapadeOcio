@@ -31,21 +31,41 @@
             <p class="text-red-500 text-xs italic">{{ $errors->first('content') }}</p>
         @endif
     </div>
-    <div class="form-group">
-        <label for="category_id" class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-            {{ __('Category') }}
-        </label>
-        <select name="category_id" id="category_id"
-            class="select2 block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500">
-            <option value="">{{ __('Choose a Value') }}</option>
-            @foreach ($categories as $category)
-                <option value="{{ $category->id }}">{{ $category->name }}</option>
-            @endforeach
-        </select>
-        @if ($errors->has('category_id'))
-            <p class="text-red-500 text-xs italic">{{ $errors->first('category_id') }}</p>
-        @endif
+
+    <div class="flex flex-wrap -mx-3 mb-2">
+        <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+            <label for="category_id" class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                {{ __('Category') }}
+            </label>
+            <select name="category_id" id="category_id"
+                class="select2 block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500">
+                <option value="">{{ __('Choose a Value') }}</option>
+                @foreach ($categories as $category)
+                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                @endforeach
+            </select>
+            @if ($errors->has('category_id'))
+                <p class="text-red-500 text-xs italic">{{ $errors->first('category_id') }}</p>
+            @endif
+        </div>
+        <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0" id="div-subcategory_id">
+            <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="municipality">
+                {{ __('SubCategory') }}
+            </label>
+            <select
+                class="select2 block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                id="subcategory_id" name="subcategory_id">
+                <option value="">{{ __('Choose a Value') }}</option>
+                @foreach ($subcategories as $sub)
+                    <option value="{{ $sub->id }}">{{ $sub->name }}</option>
+                @endforeach
+            </select>
+            @if ($errors->has('subcategory_id'))
+                <p class="text-red-500 text-xs italic">{{ $errors->first('subcategory_id') }}</p>
+            @endif
+        </div>
     </div>
+
     <div class="flex flex-wrap -mx-3 mb-2">
         <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
             <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="province">
@@ -161,14 +181,50 @@
 
 
 <script type="text/javascript">
+
     $('#category_id').val({{ old('category_id', $banner->category_id ?? '') }});
     $('#category_id').select2();
+
+    $('#subcategory_id').val({{ old('subcategory_id', $banner->subcategory_id ?? '') }});
+    var url = "{{ route('subcategory-autocomplete') }}";
+    $('#subcategory_id').select2({
+        placeholder: 'Choose a Value',
+        ajax: {
+            url: url,
+            dataType: 'json',
+            delay: 250,
+            data: function(params) {
+                return {
+                    q: params.term, // search term
+                    page: params.page,
+                    category_id: $('#category_id').val(),
+                };
+            },
+            processResults: function(data) {
+                /*if (data.length > 0)
+                    $('#div-subcategory_id').removeClass('hidden');
+                else
+                    $('#div-subcategory_id').addClass('hidden');*/
+
+                return {
+                    results: $.map(data, function(item) {
+                        return {
+                            text: item.name,
+                            id: item.id
+                        }
+                    })
+                };
+            },
+            cache: true
+        }
+    });
+
 
     $('#province').val({{ old('province', $banner->province ?? '') }});
     $('#province').select2();
 
     $('#municipality').val({{ old('municipality', $banner->municipality ?? '') }});
-    var path = "{{ route('autocomplete') }}";
+    var path = "{{ route('municipality-autocomplete') }}";
     $('#municipality').select2({
         placeholder: 'Choose a Value',
         ajax: {
@@ -211,8 +267,10 @@
             if (instance === fechaInicioPicker) {
                 // Validación al cambiar la fecha de inicio
                 fechaFinPicker.set('minDate', selectedDates[0]); // Establecer fecha mínima en el campo de fin
-                if (fechaFinInput.value && fechaInicioPicker.selectedDates[0] > fechaFinPicker.selectedDates[0]) {
-                    fechaFinPicker.clear(); // Limpiar el campo de fin si la fecha de inicio es posterior a la fecha de fin
+                if (fechaFinInput.value && fechaInicioPicker.selectedDates[0] > fechaFinPicker.selectedDates[
+                    0]) {
+                    fechaFinPicker
+                .clear(); // Limpiar el campo de fin si la fecha de inicio es posterior a la fecha de fin
                     fechaFinInput._flatpickr.setDate(fechaInicioPicker.selectedDates[0]);
                 }
             }
