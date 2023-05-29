@@ -50,7 +50,34 @@
                         <div class="mt-8">
                             <p class="text-lg">{{ $banner->content }}</p>
                         </div>
+                    
+                        <div class="form-group">
+                            <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                                for="place">
+                                {{ __('Map') }}
+                            </label>
+                            <div id="map"></div>
+                        </div>
+
                     </div>
+
+                    <script type="text/javascript">
+                        var position = [$banner->latitud, $banner->longitud];
+
+                        // Crea el mapa en el contenedor "map" y establece la vista inicial en el centro del mundo
+                        var map = L.map('map').setView(position, 15);
+
+                        // Crea un marcador en la posición y añádelo al mapa
+                        var marker;
+                        if (latitud && longitud)
+                            marker = L.marker(position).addTo(map);
+
+                        // Añade el control de mapa de OpenStreetMap al mapa
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+                            maxZoom: 18
+                        }).addTo(map);
+                    </script>
 
 
 
