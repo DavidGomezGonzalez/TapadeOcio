@@ -43,6 +43,8 @@
                             <p class="text-lg">{{ $banner->content }}</p>
                         </div>
 
+                        
+
                         {{--  
                         <div class="mt-8">
                             <p class="text-xl">Latitud: {{ $banner->latitud }}</p>
