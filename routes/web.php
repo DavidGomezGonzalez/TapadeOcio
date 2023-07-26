@@ -9,6 +9,7 @@ use App\Http\Controllers\SubcategoryController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\BannerController;
 use App\Http\Controllers\DashboardCotroller;
+use App\Http\Controllers\IconController;
 use App\Http\Livewire\UsersTable;
 use App\Models\Banner;
 use App\Models\Subcategory;
@@ -84,6 +85,13 @@ Route::middleware([
         Route::get('/search_geolocation', [BannerController::class, 'search_geolocation'])->name('search.geolocation');
 
         Route::get('sales-chart', [AnalyticsController::class, 'salesChart']);
+
+        //Icons
+        Route::resource('icons', 'App\Http\Controllers\IconController');
+        //Route::get('/icons/create', 'App\Http\Controllers\IconController@create')->name('icons.create');
+        //Route::get('/icons/create', [IconController::class, 'create'])->name('icons.create');
+
+
     });
 });
 

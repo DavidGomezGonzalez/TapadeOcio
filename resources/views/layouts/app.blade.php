@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="https://fonts.bunny.net/css2?family=Nunito:wght@400;600;700&display=swap">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    
+
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
 
@@ -29,7 +29,8 @@
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
     <!-- Incluir jQuery UI desde CDN -->
-    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js" integrity="sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"
+        integrity="sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0=" crossorigin="anonymous"></script>
 
     <!-- Opcionalmente, incluir una hoja de estilos CSS para jQuery UI -->
 
@@ -83,11 +84,15 @@
                             </li>
                             <li
                                 class="@php echo request()->routeIs('categories.*') ? 'nav_active' : ''; @endphp py-3 px-6 border ">
-                                <a href="{{ route('categories.index') }}" class="">Categories</a>
+                                <a href="{{ route('categories.index') }}" class="">{{ __('Categories') }}</a>
                             </li>
                             <li
                                 class="@php echo request()->routeIs('banners.*') ? 'nav_active' : ''; @endphp py-3 px-6 border ">
-                                <a href="{{ route('banners.index') }}" class="">Banners</a>
+                                <a href="{{ route('banners.index') }}" class="">{{ __('Banners') }}</a>
+                            </li>
+                            <li
+                                class="@php echo request()->routeIs('icons.*') ? 'nav_active' : ''; @endphp py-3 px-6 border ">
+                                <a href="{{ route('icons.index') }}" class="">{{ __('Icons') }}</a>
                             </li>
                         </ul>
                     </div>

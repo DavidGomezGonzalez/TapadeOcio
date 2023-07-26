@@ -13,8 +13,8 @@
                         <thead>
                             <tr>
                                 {{-- <th class="border px-4 py-2 text-left">ID</th> --}}
+                                <th class="border px-4 py-2 text-center">{{ __('Icon') }}</th>
                                 <th class="border px-4 py-2 text-left">{{ __('Name') }}</th>
-                                {{-- <th class="px-4 py-2 text-left">Description</th> --}}
                                 <th class="border px-4 py-2">{{ __('Action') }}</th>
                             </tr>
                         </thead>
@@ -22,6 +22,12 @@
                             @foreach ($categories as $category)
                                 <tr>
                                     {{-- <tdclass="borderpx-4py-2">$category->id }}</td> --}}
+                                    <td class="border px-4 py-2 flex justify-center">
+                                        @if ($category->icon)
+                                            <x-icon name="{{ pathinfo($category->icon->filename, PATHINFO_FILENAME) }}"
+                                                class="w-20 h-20" />
+                                        @endif
+                                    </td>
                                     <td class="border px-4 py-2">{{ $category->name }}</td>
                                     {{-- <td class="border px-4 py-2">{{ $category->description }}</td> --}}
                                     <td class="border px-6 py-4">

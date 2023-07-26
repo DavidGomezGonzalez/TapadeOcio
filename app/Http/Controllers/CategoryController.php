@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Icon;
 use App\Models\Subcategory;
 use Illuminate\Http\Request;
 
@@ -26,7 +27,8 @@ class CategoryController extends Controller
      */
     public function create()
     {
-        return view('categories.create');
+        $icons = Icon::whereDoesntHave('category')->get();
+        return view('categories.create', compact('icons'));
     }
 
     /**
@@ -39,10 +41,13 @@ class CategoryController extends Controller
     {
         $validatedData = $request->validate([
             'name' => 'required|max:255',
+            'icon_id' => 'nulleable',
+            'is_main' => 'nullable|boolean',
+            'order' => 'required|integer',
         ]);
-    
+
         $category = Category::create($validatedData);
-    
+
         return redirect()->route('categories.edit', $category);
     }
 
@@ -66,7 +71,10 @@ class CategoryController extends Controller
     public function edit(Category $category)
     {
         $subcategories = Subcategory::where('category_id', $category->id)->get();
-        return view('categories.edit', ['category' => $category, 'subcategories' => $subcategories]);
+        $icons = Icon::whereDoesntHave('category')
+            ->orWhere('id', $category->icon_id)
+            ->get();
+        return view('categories.edit', ['category' => $category, 'subcategories' => $subcategories, 'icons' => $icons]);
     }
 
     /**
@@ -78,7 +86,19 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
-        $category->update($request->all());
+        $request->validate([
+            // Agrega aquí tus otras reglas de validación...
+            'name' => 'required|max:255',
+            'is_main' => 'nullable|boolean',
+            'order' => 'required|integer|min:0',
+        ]);
+
+        $category->name = $request->name;
+        $category->is_main = $request->has('is_main');
+        $category->order = $request->order;
+
+        $category->save();
+
         return redirect()->route('categories.edit', ['category' => $category])->with('success', trans('Categoria actualizado'));
     }
 

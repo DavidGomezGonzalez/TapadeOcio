@@ -1,3 +1,24 @@
+<style>
+    .category-item.active {
+        background-color: #c3e6c4;
+    }
+
+    .spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid #ccc;
+        border-top-color: #999;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+</style>
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
@@ -12,7 +33,7 @@
                 <!-- Cabecera -->
                 @include('banners.components.header', ['municipio' => $municipio])
 
-                <div id="category-list">
+                {{-- <div id="category-list">
                     <div class="flex flex-col space-y-4 p-8">
                         <h2 class="text-2xl font-bold">Categorías</h2>
                         @foreach ($categories as $category)
@@ -50,7 +71,32 @@
                             </div>
                         @endforeach
                     </div>
+                </div> --}}
 
+
+                <div id="category-list" class="category-container">
+                    <div class="flex flex-col space-y-4 p-8">
+                        <h2 class="text-2xl font-bold">{{ __('Categorías') }}</h2>
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                            @foreach ($categories as $category)
+                                <div class="category-item rounded-md overflow-hidden cursor-pointer active">
+                                    <div class="p-6 border border-gray-300 rounded-md text-center category-toggle">
+                                        <div class="mb-2 flex justify-center">
+                                            @if ($category->icon)
+                                                <x-icon
+                                                    name="{{ pathinfo($category->icon->filename, PATHINFO_FILENAME) }}"
+                                                    class="w-6 h-6" />
+                                            @endif
+                                        </div>
+                                        <p class="font-semibold">{{ $category->name }}</p>
+                                    </div>
+                                    <input class="form-check-input category-checkbox hidden" type="checkbox"
+                                        value="{{ $category->id }}" id="category-{{ $category->id }}"
+                                        data-category-id="{{ $category->id }}" checked>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
                 </div>
 
                 <div id="banners-container">
@@ -58,6 +104,9 @@
                         'todayBanners' => $todayBanners,
                         'upcomingBanners' => $upcomingBanners,
                     ])
+                    <div class="flex justify-around hidden">
+                        <span class="spinner"></span> <!-- Agrega el spinner oculto -->
+                    </div>
                 </div>
 
             </div>
@@ -68,12 +117,6 @@
 
 
 <script>
-    document.querySelectorAll('.banner').forEach(function(banner) {
-        banner.addEventListener('click', function() {
-            window.location.href = banner.dataset.url;
-        });
-    });
-
     $(document).ready(function() {
         $(".accordion-button").click(function() {
             var categoryId = $(this).prev().prev().data('category-id');
@@ -82,6 +125,25 @@
         });
     });
 
+
+    const categoryItems = document.querySelectorAll('.category-item');
+
+    categoryItems.forEach(item => {
+        const toggle = item.querySelector('.category-toggle');
+        const checkbox = item.querySelector('.category-checkbox');
+
+        toggle.addEventListener('click', () => {
+            checkbox.checked = !checkbox.checked;
+
+            if (checkbox.checked) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+
+            checkbox.dispatchEvent(new Event('change'));
+        });
+    });
 
     const categoryCheckboxes = document.querySelectorAll('.category-checkbox, .subcategory-checkbox');
     categoryCheckboxes.forEach(checkbox => {
@@ -92,6 +154,17 @@
             const checkedSubcategories = Array.from(categoryCheckboxes)
                 .filter(checkbox => checkbox.checked && checkbox.name === 'subcategory')
                 .map(checkbox => checkbox.value);
+
+            const categoryItem = checkbox.closest('.category-item');
+
+            if (checkbox.checked) {
+                categoryItem.classList.add('active');
+            } else {
+                categoryItem.classList.remove('active');
+            }
+
+            //$('.spinner').removeClass('hidden'); // Muestra el spinner durante la carga
+
             $.ajax({
                 type: 'POST',
                 url: '/banners/filter',
@@ -103,7 +176,7 @@
                 },
                 dataType: 'json',
                 success: function(data) {
-                    console.log(data);
+                    //$('.spinner').addClass('hidden'); // Oculta el spinner al hacer clic
                     $('#banners-container').html(data.html);
                 }
             });

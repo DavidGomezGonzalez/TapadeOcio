@@ -63,14 +63,23 @@ class BannerController extends Controller
             return response()->json(['message' => 'category_ids es nulo']);
         }
 
+
         $todayBanners = Banner::with(['category', 'municipio'])
-            ->where('municipality', $request->municipio)
+            ->where(function ($query) use ($request) {
+                if ($request->municipio != 0) {
+                    $query->where('municipality', $request->municipio);
+                }
+            })
             ->whereDate('start_time', Carbon::today())
             ->whereIn('category_id', $category_ids)
             ->get();
-
+        
         $upcomingBanners = Banner::with(['category', 'municipio'])
-            ->where('municipality', $request->municipio)
+            ->where(function ($query) use ($request) {
+                if ($request->municipio != 0) {
+                    $query->where('municipality', $request->municipio);
+                }
+            })
             ->whereDate('start_time', '>', Carbon::today())
             ->whereIn('category_id', $category_ids)
             ->get();
@@ -248,7 +257,7 @@ class BannerController extends Controller
 
     public function view($id)
     {
-        $banner = Banner::with('category','subcategory','municipio', 'provincia')->findOrFail($id);
+        $banner = Banner::with('category', 'subcategory', 'municipio', 'provincia')->findOrFail($id);
 
         return view('banners.view', ['banner' => $banner]);
     }

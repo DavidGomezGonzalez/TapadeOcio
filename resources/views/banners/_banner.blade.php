@@ -1,10 +1,10 @@
-<div class="w-full md:w-1/4 h-full flex flex-col justify-center px-4 border-r border-gray-300">
+<div class="w-full md:w-1/4 h-full min-w-min flex flex-col justify-center px-4 border-r border-gray-300">
     @include('banners._showpartial', [
         'fecha_inicio' => $banner->start_time,
         'fecha_fin' => $banner->end_time,
     ])
 </div>
-<div class="w-full md:w-2/4 px-4 h-full flex flex-col justify-around">
+<div class="w-full md:w-2/4 px-4 h-full min-w-min min-h-min overflow-hidden flex flex-col justify-around">
     <h2 class="text-lg text-center md:text-lg lg:text-lg font-bold mb-4">{{ $banner->title }}</h2>
     {{-- <p class="text-lgmb-2">$banner->content </p> --}}
     <div class="flex justify-center">

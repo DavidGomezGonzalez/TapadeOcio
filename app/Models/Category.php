@@ -10,11 +10,22 @@ class Category extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'description'
+        'name', 'description', 'icon_id', 'is_main', 'order'
     ];
 
     public function subcategories()
-{
-    return $this->hasMany(Subcategory::class);
-}
+    {
+        return $this->hasMany(Subcategory::class);
+    }
+
+    public function icon()
+    {
+        return $this->belongsTo(Icon::class);
+    }
+
+
+    /*public function icons()
+    {
+        return $this->belongsTo(Icon::class);
+    }*/
 }
